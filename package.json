@@ -11,6 +11,12 @@
     "start": "node index.js"
   },
   "dependencies": {
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "mongodb": "^7.1.1",
+    "dotenv": "^16.4.5",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "morgan": "^1.10.0",
+    "express-rate-limit": "^7.4.1"
   }
 }

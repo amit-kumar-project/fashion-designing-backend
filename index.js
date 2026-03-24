@@ -1,12 +1,42 @@
-import express from "express";
+import express from 'express';
+import dotenv from 'dotenv';
+import { connectDB } from './src/config/database.js';
+import { setupMiddleware } from './src/middleware/index.js';
+import { errorHandler, notFound } from './src/middleware/errorHandler.js';
+import { setupRoutes } from './src/routes/index.js';
+
+// Load environment variables
+dotenv.config();
 
 const app = express();
-const port = 8080;
+const port = process.env.PORT || 8080;
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
+// Setup middleware
+setupMiddleware(app);
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
-});
+// Database connection and routes setup
+const startServer = async () => {
+  try {
+    // Connect to database
+    const db = await connectDB();
+    
+    // Setup routes
+    setupRoutes(app, db);
+    
+    // Error handling middleware (must be after routes)
+    app.use(notFound);
+    app.use(errorHandler);
+    
+    // Start server
+    app.listen(port, () => {
+      console.log(`🚀 Fashion Design API Server running on port ${port}`);
+      console.log(`📚 API Documentation: http://localhost:${port}/api`);
+      console.log(`🏥 Health Check: http://localhost:${port}/api/health`);
+    });
+  } catch (error) {
+    console.error('❌ Failed to start server:', error);
+    process.exit(1);
+  }
+};
+
+startServer();
