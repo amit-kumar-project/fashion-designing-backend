@@ -1,8 +1,8 @@
-import { Design } from '../models/Design.js';
+import { Design } from '../models/DesignSchema.js';
 
 export class DesignController {
-  constructor(db) {
-    this.designModel = new Design(db);
+  constructor() {
+    this.designModel = Design;
   }
 
   // POST /api/designs
@@ -10,7 +10,7 @@ export class DesignController {
     try {
       const { title, description, userId, imageUrl, tags } = req.body;
       
-      const result = await this.designModel.create({
+      const design = await this.designModel.create({
         title,
         description,
         userId,
@@ -21,12 +21,12 @@ export class DesignController {
       res.status(201).json({
         success: true,
         data: {
-          id: result.insertedId,
-          title,
-          description,
-          userId,
-          imageUrl,
-          tags
+          id: design._id,
+          title: design.title,
+          description: design.description,
+          userId: design.userId,
+          imageUrl: design.imageUrl,
+          tags: design.tags
         }
       });
     } catch (error) {
@@ -38,7 +38,7 @@ export class DesignController {
   async getDesignById(req, res, next) {
     try {
       const { id } = req.params;
-      const design = await this.designModel.findById(id);
+      const design = await this.designModel.findById(id).populate('userId', 'name email');
       
       if (!design) {
         return res.status(404).json({
@@ -60,7 +60,7 @@ export class DesignController {
   async getDesignsByUser(req, res, next) {
     try {
       const { userId } = req.params;
-      const designs = await this.designModel.findByUserId(userId);
+      const designs = await this.designModel.find({ userId }).populate('userId', 'name email');
       
       res.json({
         success: true,
@@ -83,7 +83,10 @@ export class DesignController {
         });
       }
 
-      const designs = await this.designModel.search(q);
+      const designs = await this.designModel.find(
+        { $text: { $search: q } },
+        { score: { $meta: 'textScore' } }
+      ).sort({ score: { $meta: 'textScore' } }).populate('userId', 'name email');
       
       res.json({
         success: true,
@@ -100,9 +103,13 @@ export class DesignController {
       const { id } = req.params;
       const updateData = req.body;
       
-      const result = await this.designModel.update(id, updateData);
+      const design = await this.designModel.findByIdAndUpdate(
+        id, 
+        updateData, 
+        { new: true, runValidators: true }
+      );
       
-      if (result.matchedCount === 0) {
+      if (!design) {
         return res.status(404).json({
           success: false,
           error: 'Design not found'
@@ -122,9 +129,9 @@ export class DesignController {
   async deleteDesign(req, res, next) {
     try {
       const { id } = req.params;
-      const result = await this.designModel.delete(id);
+      const design = await this.designModel.findByIdAndDelete(id);
       
-      if (result.deletedCount === 0) {
+      if (!design) {
         return res.status(404).json({
           success: false,
           error: 'Design not found'

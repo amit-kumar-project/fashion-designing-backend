@@ -1,8 +1,8 @@
-import { User } from '../models/User.js';
+import { User } from '../models/UserSchema.js';
 
 export class AuthController {
-  constructor(db) {
-    this.userModel = new User(db);
+  constructor() {
+    this.userModel = User;
   }
 
   // POST /api/auth/signup
@@ -33,7 +33,7 @@ export class AuthController {
       }
 
       // Check if user already exists
-      const existingUser = await this.userModel.findByEmail(email);
+      const existingUser = await this.userModel.findOne({ email });
       if (existingUser) {
         return res.status(400).json({
           success: false,
@@ -42,7 +42,7 @@ export class AuthController {
       }
 
       // Check if phone number already exists
-      const existingPhone = await this.userModel.findByPhoneNumber(phoneNumber);
+      const existingPhone = await this.userModel.findOne({ phoneNumber });
       if (existingPhone) {
         return res.status(400).json({
           success: false,
@@ -51,7 +51,7 @@ export class AuthController {
       }
 
       // Create user
-      const result = await this.userModel.create({
+      const user = await this.userModel.create({
         name,
         email,
         phoneNumber,
@@ -62,10 +62,10 @@ export class AuthController {
         success: true,
         message: 'Account created successfully',
         data: {
-          userId: result.insertedId,
-          name,
-          email,
-          phoneNumber
+          userId: user._id,
+          name: user.name,
+          email: user.email,
+          phoneNumber: user.phoneNumber
         }
       });
     } catch (error) {
@@ -87,7 +87,7 @@ export class AuthController {
       }
 
       // Find user
-      const user = await this.userModel.findByEmail(email);
+      const user = await this.userModel.findOne({ email }).select('+password');
       if (!user) {
         return res.status(401).json({
           success: false,
@@ -132,7 +132,7 @@ export class AuthController {
       }
 
       // Find user
-      const user = await this.userModel.findByEmail(email);
+      const user = await this.userModel.findOne({ email });
       if (!user) {
         // For security, don't reveal if email exists
         return res.json({
@@ -185,7 +185,7 @@ export class AuthController {
       }
 
       // Find user
-      const user = await this.userModel.findByEmail(email);
+      const user = await this.userModel.findOne({ email });
       if (!user) {
         return res.status(404).json({
           success: false,
@@ -194,7 +194,7 @@ export class AuthController {
       }
 
       // Update password (In production, hash the password)
-      await this.userModel.update(user._id.toString(), {
+      await this.userModel.findByIdAndUpdate(user._id, {
         password: newPassword
       });
 

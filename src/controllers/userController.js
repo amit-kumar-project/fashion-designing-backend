@@ -1,8 +1,8 @@
-import { User } from '../models/User.js';
+import { User } from '../models/UserSchema.js';
 
 export class UserController {
-  constructor(db) {
-    this.userModel = new User(db);
+  constructor() {
+    this.userModel = User;
   }
 
   // POST /api/users
@@ -11,7 +11,7 @@ export class UserController {
       const { email, name, password } = req.body;
       
       // Check if user already exists
-      const existingUser = await this.userModel.findByEmail(email);
+      const existingUser = await this.userModel.findOne({ email });
       if (existingUser) {
         return res.status(400).json({
           success: false,
@@ -19,14 +19,14 @@ export class UserController {
         });
       }
 
-      const result = await this.userModel.create({ email, name, password });
+      const user = await this.userModel.create({ email, name, password });
       
       res.status(201).json({
         success: true,
         data: {
-          id: result.insertedId,
-          email,
-          name
+          id: user._id,
+          email: user.email,
+          name: user.name
         }
       });
     } catch (error) {
@@ -38,7 +38,7 @@ export class UserController {
   async getUserById(req, res, next) {
     try {
       const { id } = req.params;
-      const user = await this.userModel.findById(id);
+      const user = await this.userModel.findById(id).select('-password');
       
       if (!user) {
         return res.status(404).json({
@@ -70,9 +70,13 @@ export class UserController {
       // Remove sensitive fields
       delete updateData.password;
       
-      const result = await this.userModel.update(id, updateData);
+      const user = await this.userModel.findByIdAndUpdate(
+        id, 
+        updateData, 
+        { new: true, runValidators: true }
+      );
       
-      if (result.matchedCount === 0) {
+      if (!user) {
         return res.status(404).json({
           success: false,
           error: 'User not found'
@@ -92,9 +96,9 @@ export class UserController {
   async deleteUser(req, res, next) {
     try {
       const { id } = req.params;
-      const result = await this.userModel.delete(id);
+      const user = await this.userModel.findByIdAndDelete(id);
       
-      if (result.deletedCount === 0) {
+      if (!user) {
         return res.status(404).json({
           success: false,
           error: 'User not found'

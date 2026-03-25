@@ -1,31 +1,29 @@
-import { MongoClient } from 'mongodb';
+import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-// Use environment variable or fallback to a simple connection
-const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/fashion_app';
-
-const client = new MongoClient(uri, {
-  serverSelectionTimeoutMS: 5000,
-  connectTimeoutMS: 10000
-});
+// Use environment variable or fallback to MongoDB Atlas
+const uri = process.env.MONGODB_URI || 'mongodb+srv://kanish20229_db_user:mTcSHCxtFMvhacw9@cluster0.ymbkanw.mongodb.net/fashion_app?retryWrites=true&w=majority&appName=Cluster0';
 
 export const connectDB = async () => {
   try {
-    await client.connect();
-    console.log('Connected to MongoDB');
-    return client.db();
+    await mongoose.connect(uri, {
+      serverSelectionTimeoutMS: 5000,
+      connectTimeoutMS: 10000
+    });
+    console.log('Connected to MongoDB with Mongoose');
+    return mongoose.connection.db;
   } catch (error) {
     console.error('MongoDB connection error:', error);
-    process.exit(1);
+    throw error;
   }
 };
 
 export const getDB = () => {
-  return client.db();
+  return mongoose.connection.db;
 };
 
 export const closeDB = async () => {
-  await client.close();
+  await mongoose.connection.close();
 };

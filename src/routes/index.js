@@ -9,10 +9,10 @@ import { AuthController } from '../controllers/authController.js';
 export const setupRoutes = (app, db) => {
   const router = Router();
   
-  // Initialize controllers with database connection
-  const userController = new UserController(db);
-  const designController = new DesignController(db);
-  const authController = new AuthController(db);
+  // Initialize controllers (Mongoose handles connection)
+  const userController = new UserController();
+  const designController = new DesignController();
+  const authController = new AuthController();
   
   // API routes
   router.use('/auth', createAuthRoutes(authController));
