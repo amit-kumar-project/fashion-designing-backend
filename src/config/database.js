@@ -1,6 +1,9 @@
 import { MongoClient } from 'mongodb';
+import dotenv from 'dotenv';
 
-const uri = process.env.MONGODB_URI || 'mongodb+srv://kanish20229_db_user:mTcSHCxtFMvhacw9@cluster0.ymbkanw.mongodb.net/?appName=Cluster0';
+dotenv.config();
+
+const uri = process.env.MONGODB_URI;
 const client = new MongoClient(uri);
 
 export const connectDB = async () => {
