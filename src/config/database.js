@@ -3,11 +3,10 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const uri = process.env.MONGODB_URI || 'mongodb+srv://kanish20229_db_user:mTcSHCxtFMvhacw9@cluster0.ymbkanw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0&tlsAllowInvalidCertificates=true';
+// Use environment variable or fallback to a simple connection
+const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/fashion_app';
 
 const client = new MongoClient(uri, {
-  tls: true,
-  tlsAllowInvalidCertificates: true,
   serverSelectionTimeoutMS: 5000,
   connectTimeoutMS: 10000
 });
