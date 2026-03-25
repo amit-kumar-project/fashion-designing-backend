@@ -18,7 +18,14 @@ setupMiddleware(app);
 const startServer = async () => {
   try {
     // Connect to database
-    const db = await connectDB();
+    let db;
+    try {
+      db = await connectDB();
+    } catch (mongoError) {
+      console.log('MongoDB failed, using in-memory database');
+      const { connectDB: connectMemoryDB } = await import('./src/config/memoryDB.js');
+      db = await connectMemoryDB();
+    }
     
     // Setup routes
     setupRoutes(app, db);
