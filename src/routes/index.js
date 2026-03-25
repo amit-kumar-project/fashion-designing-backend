@@ -1,23 +1,15 @@
 import { Router } from 'express';
-import { createUserRoutes } from './userRoutes.js';
-import { createDesignRoutes } from './designRoutes.js';
-import { createAuthRoutes } from './authRoutes.js';
-import { UserController } from '../controllers/userController.js';
-import { DesignController } from '../controllers/designController.js';
-import { AuthController } from '../controllers/authController.js';
+import authRoutes from './authRoutes.js';
+import userRoutes from './userRoutes.js';
+import designRoutes from './designRoutes.js';
 
-export const setupRoutes = (app, db) => {
+export const setupRoutes = (app) => {
   const router = Router();
   
-  // Initialize controllers (Mongoose handles connection)
-  const userController = new UserController();
-  const designController = new DesignController();
-  const authController = new AuthController();
-  
   // API routes
-  router.use('/auth', createAuthRoutes(authController));
-  router.use('/users', createUserRoutes(userController));
-  router.use('/designs', createDesignRoutes(designController));
+  router.use('/auth', authRoutes);
+  router.use('/users', userRoutes);
+  router.use('/designs', designRoutes);
   
   // Health check endpoint
   router.get('/health', (req, res) => {

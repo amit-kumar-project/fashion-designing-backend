@@ -1,25 +1,31 @@
 import { Router } from 'express';
+import { 
+  createDesign, 
+  getDesignById, 
+  getDesignsByUser, 
+  searchDesigns, 
+  updateDesign, 
+  deleteDesign 
+} from '../controllers/designController.js';
 
-export const createDesignRoutes = (designController) => {
-  const router = Router();
+const router = Router();
 
-  // POST /api/designs - Create a new design
-  router.post('/', designController.createDesign.bind(designController));
+// GET /api/designs/search - Search designs (must be before /:id)
+router.get('/search', searchDesigns);
 
-  // GET /api/designs/:id - Get design by ID
-  router.get('/:id', designController.getDesignById.bind(designController));
+// GET /api/designs/user/:userId - Get designs by user
+router.get('/user/:userId', getDesignsByUser);
 
-  // GET /api/designs/user/:userId - Get designs by user
-  router.get('/user/:userId', designController.getDesignsByUser.bind(designController));
+// POST /api/designs - Create a new design
+router.post('/', createDesign);
 
-  // GET /api/designs/search - Search designs
-  router.get('/search', designController.searchDesigns.bind(designController));
+// GET /api/designs/:id - Get design by ID
+router.get('/:id', getDesignById);
 
-  // PUT /api/designs/:id - Update design
-  router.put('/:id', designController.updateDesign.bind(designController));
+// PUT /api/designs/:id - Update design
+router.put('/:id', updateDesign);
 
-  // DELETE /api/designs/:id - Delete design
-  router.delete('/:id', designController.deleteDesign.bind(designController));
+// DELETE /api/designs/:id - Delete design
+router.delete('/:id', deleteDesign);
 
-  return router;
-};
+export default router;

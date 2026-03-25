@@ -1,19 +1,18 @@
 import { Router } from 'express';
+import { signup, login, forgotPassword, resetPassword } from '../controllers/authController.js';
 
-export const createAuthRoutes = (authController) => {
-  const router = Router();
+const router = Router();
 
-  // POST /api/auth/signup - Create account
-  router.post('/signup', authController.signup.bind(authController));
+// POST /api/auth/signup - Create account
+router.post('/signup', signup);
 
-  // POST /api/auth/login - Login to account
-  router.post('/login', authController.login.bind(authController));
+// POST /api/auth/login - Login to account
+router.post('/login', login);
 
-  // POST /api/auth/forgot-password - Request password reset
-  router.post('/forgot-password', authController.forgotPassword.bind(authController));
+// POST /api/auth/forgot-password - Request password reset
+router.post('/forgot-password', forgotPassword);
 
-  // POST /api/auth/reset-password - Reset password
-  router.post('/reset-password', authController.resetPassword.bind(authController));
+// POST /api/auth/reset-password - Reset password
+router.post('/reset-password', resetPassword);
 
-  return router;
-};
+export default router;
