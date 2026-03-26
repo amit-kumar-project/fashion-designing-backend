@@ -8,8 +8,13 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js",
-    "dev": "nodemon index.js"
+    "start": "NODE_ENV=production node index.js",
+    "start:prod": "NODE_ENV=production node index.js",
+    "start:dev": "NODE_ENV=development node index.js",
+    "start:local": "NODE_ENV=local node index.js",
+    "dev": "NODE_ENV=local nodemon index.js",
+    "dev:dev": "NODE_ENV=development nodemon index.js",
+    "dev:prod": "NODE_ENV=production nodemon index.js"
   },
   "dependencies": {
     "express": "^5.2.1",

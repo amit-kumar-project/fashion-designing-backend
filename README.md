@@ -38,20 +38,43 @@ src/
    npm install
    ```
 
-3. Create environment file:
+3. Set up environment files:
    ```bash
-   cp .env.example .env
+   # Quick setup using script
+   ./setup-env.sh
+   
+   # Or manually copy example files
+   cp .env.local.example .env.local
+   cp .env.dev.example .env.dev
+   cp .env.prod.example .env.prod
    ```
 
-4. Update `.env` with your configuration:
+4. Update environment files with your configuration:
    - MongoDB connection string
    - Port number
    - CORS origins
+   - JWT secret (for production)
 
 5. Start the server:
    ```bash
-   npm start
+   # Local development
+   npm run dev
+   
+   # Development environment
+   npm run start:dev
+   
+   # Production
+   npm run start:prod
    ```
+
+### 🌍 Multi-Environment Support
+
+This project supports three environments:
+- **Local** - Local MongoDB, relaxed security
+- **Development** - MongoDB Atlas dev database, testing features
+- **Production** - MongoDB Atlas production database, strict security
+
+See [ENVIRONMENT_SETUP.md](ENVIRONMENT_SETUP.md) for detailed configuration guide.
 
 ## 📚 API Endpoints
 

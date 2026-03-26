@@ -1,15 +1,12 @@
 import express from 'express';
-import dotenv from 'dotenv';
+import config from './src/config/env.js';
 import { connectDB } from './src/config/database.js';
 import { setupMiddleware } from './src/middleware/index.js';
 import { errorHandler, notFound } from './src/middleware/errorHandler.js';
 import { setupRoutes } from './src/routes/index.js';
 
-// Load environment variables
-dotenv.config();
-
 const app = express();
-const port = process.env.PORT || 8080;
+const port = config.port;
 
 // Setup middleware
 setupMiddleware(app);
