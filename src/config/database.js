@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // Use environment variable or fallback to MongoDB Atlas
-const uri = process.env.MONGODB_URI || 'mongodb+srv://kanish20229_db_user:mTcSHCxtFMvhacw9@cluster0.ymbkanw.mongodb.net/fashion_app?retryWrites=true&w=majority&appName=Cluster0';
+const uri = process.env.MONGODB_URI || 'mongodb+srv://kanish20229_db_user:mTcSHCxtFMvhacw9@cluster0.ymbkanw.mongodb.net/?appName=Cluster0/fashionDesignDB';
 
 export const connectDB = async () => {
   try {
