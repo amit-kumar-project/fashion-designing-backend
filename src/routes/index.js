@@ -2,6 +2,7 @@ import { Router } from 'express';
 import authRoutes from './authRoutes.js';
 import userRoutes from './userRoutes.js';
 import designRoutes from './designRoutes.js';
+import adminRoutes from './adminRoutes.js';
 
 export const setupRoutes = (app) => {
   const router = Router();
@@ -10,6 +11,7 @@ export const setupRoutes = (app) => {
   router.use('/auth', authRoutes);
   router.use('/users', userRoutes);
   router.use('/designs', designRoutes);
+  router.use('/admin', adminRoutes);
   
   // Health check endpoint
   router.get('/health', (req, res) => {
@@ -30,6 +32,7 @@ export const setupRoutes = (app) => {
         auth: '/api/auth',
         users: '/api/users',
         designs: '/api/designs',
+        admin: '/api/admin',
         health: '/api/health'
       }
     });

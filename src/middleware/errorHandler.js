@@ -26,6 +26,13 @@ export const errorHandler = (err, req, res, next) => {
       error: 'Invalid token'
     });
   }
+
+  if (err.name === 'TokenExpiredError') {
+    return res.status(401).json({
+      success: false,
+      error: 'Token expired. Please login again.'
+    });
+  }
   
   // Default error
   res.status(err.statusCode || 500).json({

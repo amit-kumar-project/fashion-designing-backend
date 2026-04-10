@@ -14,12 +14,15 @@
     "start:local": "NODE_ENV=local node index.js",
     "dev": "NODE_ENV=local nodemon index.js",
     "dev:dev": "NODE_ENV=development nodemon index.js",
-    "dev:prod": "NODE_ENV=production nodemon index.js"
+    "dev:prod": "NODE_ENV=production nodemon index.js",
+    "make-admin": "NODE_ENV=production node scripts/make-admin-user.js"
   },
   "dependencies": {
     "express": "^5.2.1",
     "mongoose": "^8.4.1",
     "dotenv": "^16.4.5",
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "helmet": "^7.1.0",
     "morgan": "^1.10.0",

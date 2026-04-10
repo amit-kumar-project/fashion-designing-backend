@@ -73,11 +73,14 @@ Local: http://localhost:8080/api
 {
   "success": true,
   "message": "Login successful",
+  "accessToken": "<JWT_ACCESS_TOKEN>",
+  "expiresIn": "30m",
   "data": {
     "userId": "65f8a1b2c3d4e5f6a7b8c9d0",
     "name": "John Doe",
     "email": "john.doe@example.com",
-    "phoneNumber": "+1234567890"
+    "phoneNumber": "+1234567890",
+    "isAdmin": false
   }
 }
 ```
@@ -362,7 +365,44 @@ Local: http://localhost:8080/api
 
 ---
 
-## 📱 Mobile App Integration Code Examples
+## � Admin APIs (Admin Screen)
+
+These endpoints are only for users where `isAdmin: true` and require:
+- `Authorization: Bearer <accessToken>`
+
+### 1️⃣3️⃣ Get All Users (Admin)
+
+**Endpoint:** `GET /api/admin/users`
+
+**Headers:**
+```json
+{
+  "Authorization": "Bearer <accessToken>"
+}
+```
+
+### 1️⃣4️⃣ Get All Designs (Admin)
+
+**Endpoint:** `GET /api/admin/designs`
+
+**Headers:**
+```json
+{
+  "Authorization": "Bearer <accessToken>"
+}
+```
+
+If normal user calls admin APIs, response will be:
+```json
+{
+  "success": false,
+  "error": "Admin access required"
+}
+```
+
+---
+
+## �📱 Mobile App Integration Code Examples
 
 ### React Native / Expo
 
@@ -417,9 +457,11 @@ const login = async (email, password) => {
     
     if (data.success) {
       // Save user data
+      await AsyncStorage.setItem('accessToken', data.accessToken);
       await AsyncStorage.setItem('userId', data.data.userId);
       await AsyncStorage.setItem('userEmail', data.data.email);
       await AsyncStorage.setItem('userName', data.data.name);
+      await AsyncStorage.setItem('isAdmin', String(data.data.isAdmin));
       return data.data;
     } else {
       throw new Error(data.error);
@@ -453,11 +495,13 @@ const forgotPassword = async (email) => {
 const createDesign = async (title, description, imageUrl, tags) => {
   try {
     const userId = await AsyncStorage.getItem('userId');
+    const accessToken = await AsyncStorage.getItem('accessToken');
     
     const response = await fetch(`${API_BASE_URL}/designs`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
       },
       body: JSON.stringify({
         title,
@@ -643,11 +687,12 @@ class ApiService {
 
 ## 🔧 Important Notes
 
-1. **User ID Storage**: After signup/login, save the `userId` in local storage (AsyncStorage/SharedPreferences)
-2. **Error Handling**: Always check the `success` field in responses
-3. **Image URLs**: Store image URLs as strings. Use image upload services like Cloudinary, AWS S3, or Firebase Storage
-4. **Rate Limiting**: 100 requests per 15 minutes per IP
-5. **CORS**: Already configured to accept requests from all origins
+1. **Token Storage**: After login, save `accessToken` in AsyncStorage/SecureStore.
+2. **Auth Header**: Send `Authorization: Bearer <token>` for protected requests.
+3. **Role-Based UI**: Show admin screens only when `data.isAdmin === true`.
+4. **Token Expiry**: Access token expires in `30m`; on `401`, redirect to login.
+5. **Error Handling**: Always check the `success` field in responses.
+6. **Rate Limiting**: 100 requests per 15 minutes per IP.
 
 ---
 

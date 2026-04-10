@@ -14,7 +14,35 @@ headers: {
 }
 ```
 
-### 👤 User Management APIs
+### � Login (Access Token)
+```http
+POST /api/auth/login
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Login successful",
+  "accessToken": "<JWT_ACCESS_TOKEN>",
+  "expiresIn": "30m",
+  "data": {
+    "userId": "64f8a1b2c3d4e5f6a7b8c9d0",
+    "name": "John Doe",
+    "email": "user@example.com",
+    "phoneNumber": "+1234567890",
+    "isAdmin": false
+  }
+}
+```
+
+### �👤 User Management APIs
 
 #### Register User
 ```http
@@ -152,6 +180,24 @@ DELETE /api/designs/:designId
 
 ### 🏥 System APIs
 
+### 🛡️ Admin APIs (Protected)
+
+All admin routes require:
+- Valid `Authorization: Bearer <token>` header
+- Logged in user with `isAdmin: true`
+
+#### Get All Users (Admin)
+```http
+GET /api/admin/users
+Authorization: Bearer <JWT_TOKEN>
+```
+
+#### Get All Designs (Admin)
+```http
+GET /api/admin/designs
+Authorization: Bearer <JWT_TOKEN>
+```
+
 #### Health Check
 ```http
 GET /api/health
@@ -267,18 +313,19 @@ class ApiService {
 - `201` - Created
 - `400` - Bad Request
 - `401` - Unauthorized
+- `403` - Forbidden (Admin access required)
 - `404` - Not Found
 - `429` - Too Many Requests
 - `500` - Internal Server Error
 
 ## 📝 Notes for Mobile Development
 
-1. **Rate Limiting**: 100 requests per 15 minutes per IP
-2. **Request Body Size**: Maximum 10MB
-3. **Image URLs**: Store image URLs as strings, not actual files
-4. **Search**: Use the search endpoint for finding designs by title, description, or tags
-5. **User ID**: Use the returned user ID for design operations
-6. **Error Handling**: Always check the `success` field in responses
+1. **Token Storage**: Save `accessToken` securely in app storage and send in `Authorization` header.
+2. **Token Expiry**: Access token expires in `30m`; on `401`, force re-login.
+3. **Role Handling**: Use `isAdmin` from login response to decide whether to show admin screens.
+4. **Rate Limiting**: 100 requests per 15 minutes per IP.
+5. **Request Body Size**: Maximum 10MB.
+6. **Error Handling**: Always check `success` field and handle `401/403` separately.
 
 ## 🚀 Testing the API
 

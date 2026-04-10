@@ -41,7 +41,7 @@ const loadEnvironment = () => {
     nodeEnv: process.env.NODE_ENV,
     allowedOrigins: process.env.ALLOWED_ORIGINS || '*',
     jwtSecret: process.env.JWT_SECRET,
-    jwtExpire: process.env.JWT_EXPIRE || '30d',
+    jwtExpire: process.env.JWT_EXPIRE || '30m',
     maxFileSize: parseInt(process.env.MAX_FILE_SIZE || '10485760'),
     uploadPath: process.env.UPLOAD_PATH || './uploads',
     apiVersion: process.env.API_VERSION || 'v1',

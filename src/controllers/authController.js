@@ -1,4 +1,23 @@
 import { User } from '../models/UserSchema.js';
+import jwt from 'jsonwebtoken';
+import config from '../config/env.js';
+
+const generateAccessToken = user => jwt.sign(
+  {
+    userId: user._id,
+    isAdmin: user.isAdmin
+  },
+  config.jwtSecret,
+  { expiresIn: config.jwtExpire }
+);
+
+const sanitizeUser = user => ({
+  userId: user._id,
+  name: user.name,
+  email: user.email,
+  phoneNumber: user.phoneNumber,
+  isAdmin: user.isAdmin
+});
 
 const validateSignupData = ({ name, email, phoneNumber, password, confirmPassword }) => {
   if (!name || !email || !phoneNumber || !password || !confirmPassword) {
@@ -18,7 +37,7 @@ const validateSignupData = ({ name, email, phoneNumber, password, confirmPasswor
 
 export const signup = async (req, res, next) => {
   try {
-    const { name, email, phoneNumber, password, confirmPassword } = req.body;
+    const { name, email, phoneNumber, password, confirmPassword } = req.body || {};
     
     const validation = validateSignupData({ name, email, phoneNumber, password, confirmPassword });
     if (!validation.isValid) {
@@ -51,18 +70,14 @@ export const signup = async (req, res, next) => {
       name,
       email,
       phoneNumber,
-      password
+      password,
+      isAdmin: false
     });
 
     return res.status(201).json({
       success: true,
       message: 'Account created successfully',
-      data: {
-        userId: user._id,
-        name: user.name,
-        email: user.email,
-        phoneNumber: user.phoneNumber
-      }
+      data: sanitizeUser(user)
     });
   } catch (error) {
     next(error);
@@ -71,12 +86,19 @@ export const signup = async (req, res, next) => {
 
 export const login = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { email, password } = req.body || {};
     
     if (!email || !password) {
       return res.status(400).json({
         success: false,
         error: 'Email and password are required'
+      });
+    }
+
+    if (!config.jwtSecret) {
+      return res.status(500).json({
+        success: false,
+        error: 'JWT_SECRET is not configured'
       });
     }
 
@@ -88,22 +110,22 @@ export const login = async (req, res, next) => {
       });
     }
 
-    if (user.password !== password) {
+    const isPasswordValid = await user.comparePassword(password);
+    if (!isPasswordValid) {
       return res.status(401).json({
         success: false,
         error: 'Invalid email or password'
       });
     }
 
+    const accessToken = generateAccessToken(user);
+
     return res.json({
       success: true,
       message: 'Login successful',
-      data: {
-        userId: user._id,
-        name: user.name,
-        email: user.email,
-        phoneNumber: user.phoneNumber
-      }
+      accessToken,
+      expiresIn: config.jwtExpire,
+      data: sanitizeUser(user)
     });
   } catch (error) {
     next(error);
@@ -112,7 +134,7 @@ export const login = async (req, res, next) => {
 
 export const forgotPassword = async (req, res, next) => {
   try {
-    const { email } = req.body;
+    const { email } = req.body || {};
     
     if (!email) {
       return res.status(400).json({
@@ -144,7 +166,7 @@ export const forgotPassword = async (req, res, next) => {
 
 export const resetPassword = async (req, res, next) => {
   try {
-    const { email, newPassword, confirmPassword } = req.body;
+    const { email, newPassword, confirmPassword } = req.body || {};
     
     if (!email || !newPassword || !confirmPassword) {
       return res.status(400).json({
@@ -175,7 +197,8 @@ export const resetPassword = async (req, res, next) => {
       });
     }
 
-    await User.findByIdAndUpdate(user._id, { password: newPassword });
+    user.password = newPassword;
+    await user.save();
 
     return res.json({
       success: true,
