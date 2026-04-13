@@ -24,7 +24,7 @@ const loadEnvironment = () => {
 
   const envPath = resolve(__dirname, '../../', envFile);
   
-  const result = dotenv.config({ path: envPath });
+  const result = dotenv.config({ path: envPath, override: true });
   
   if (result.error && env !== 'production') {
     console.warn(`⚠️  Warning: ${envFile} not found, falling back to .env`);
@@ -47,7 +47,13 @@ const loadEnvironment = () => {
     apiVersion: process.env.API_VERSION || 'v1',
     logLevel: process.env.LOG_LEVEL || 'info',
     rateLimitWindowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000'),
-    rateLimitMaxRequests: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100')
+    rateLimitMaxRequests: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100'),
+    s3Endpoint: process.env.S3_ENDPOINT,
+    s3Region: process.env.S3_REGION || 'ap-southeast-1',
+    s3AccessKeyId: process.env.S3_ACCESS_KEY_ID,
+    s3SecretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
+    s3Bucket: process.env.S3_BUCKET,
+    s3SignedUrlExpires: parseInt(process.env.S3_SIGNED_URL_EXPIRES || '3600')
   };
 };
 

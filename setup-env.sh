@@ -10,8 +10,8 @@ echo ""
 # Function to create env file from example
 create_env_file() {
     local env_type=$1
-    local example_file=".env.${env_type}.example"
-    local target_file=".env.${env_type}"
+    local example_file=".env.prod.${env_type}.example"
+    local target_file=".env.prod.${env_type}"
     
     if [ -f "$target_file" ]; then
         echo "⚠️  $target_file already exists."
@@ -34,9 +34,9 @@ create_env_file() {
 # Main menu
 echo "Which environment(s) do you want to set up?"
 echo ""
-echo "1) Local Development (.env.local)"
-echo "2) Development (.env.dev)"
-echo "3) Production (.env.prod)"
+echo "1) Local Development (.env.prod.local)"
+echo "2) Development (.env.prod.dev)"
+echo "3) Production (.env.prod.prod)"
 echo "4) All environments"
 echo "5) Exit"
 echo ""

@@ -13,6 +13,17 @@ export const setupMiddleware = (app) => {
     origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'],
     credentials: true
   }));
+
+  app.use((req, res, next) => {
+    const startedAt = Date.now();
+    res.on('finish', () => {
+      console.log(`[REQ] ${req.method} ${req.originalUrl} ${res.statusCode} ${Date.now() - startedAt}ms`);
+    });
+    next();
+  });
+
+  // Logging
+  app.use(morgan('combined'));
   
   // Rate limiting
   const limiter = rateLimit({
@@ -21,9 +32,6 @@ export const setupMiddleware = (app) => {
     message: 'Too many requests from this IP, please try again later.'
   });
   app.use('/api/', limiter);
-  
-  // Logging
-  app.use(morgan('combined'));
   
   // Body parsing
   app.use(express.json({ limit: '10mb' }));

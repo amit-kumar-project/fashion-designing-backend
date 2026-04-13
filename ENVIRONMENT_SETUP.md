@@ -6,9 +6,9 @@ This project supports three different environments: **Local**, **Development**, 
 
 The project uses different `.env` files for each environment:
 
-- `.env.local` - Local development (MongoDB on localhost)
-- `.env.dev` - Development environment (MongoDB Atlas dev database)
-- `.env.prod` - Production environment (MongoDB Atlas production database)
+- `.env.prod.local` - Local development (MongoDB on localhost)
+- `.env.prod.dev` - Development environment (MongoDB Atlas dev database)
+- `.env.prod.prod` - Production environment (MongoDB Atlas production database)
 
 **Note:** These files are gitignored for security. Use the `.example` files as templates.
 
@@ -20,20 +20,20 @@ Copy the example files and customize them:
 
 ```bash
 # For local development
-cp .env.local.example .env.local
+cp .env.prod.local.example .env.prod.local
 
 # For development environment
-cp .env.dev.example .env.dev
+cp .env.prod.prod .env.prod.dev
 
 # For production environment
-cp .env.prod.example .env.prod
+cp .env.prod.prod.example .env.prod.prod
 ```
 
 ### 2. Configure Each Environment
 
 Edit each `.env` file with your specific configuration:
 
-#### `.env.local` - Local Development
+#### `.env.prod.local` - Local Development
 ```env
 PORT=8080
 NODE_ENV=local
@@ -41,7 +41,7 @@ MONGODB_URI=mongodb://localhost:27017/fashionDesignDB
 ALLOWED_ORIGINS=http://localhost:3000,http://localhost:19006
 ```
 
-#### `.env.dev` - Development
+#### `.env.prod.dev` - Development
 ```env
 PORT=8080
 NODE_ENV=development
@@ -49,7 +49,7 @@ MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/fashionDesignDB_dev
 ALLOWED_ORIGINS=*
 ```
 
-#### `.env.prod` - Production
+#### `.env.prod.prod` - Production
 ```env
 PORT=8080
 NODE_ENV=production
@@ -197,7 +197,7 @@ console.log(config.port);       // Server port
 ## 🐛 Troubleshooting
 
 ### Environment file not loading
-- Check file name matches exactly (`.env.local`, `.env.dev`, `.env.prod`)
+- Check file name matches exactly (`.env.prod.local`, `.env.prod.dev`, `.env.prod.prod`)
 - Ensure `NODE_ENV` is set correctly
 - Check file permissions
 
@@ -216,7 +216,7 @@ console.log(config.port);       // Server port
 1. **Local Development**
    ```bash
    # Create local env file
-   cp .env.local.example .env.local
+   cp .env.prod.local.example .env.prod.local
    
    # Start local MongoDB
    mongod
@@ -228,7 +228,7 @@ console.log(config.port);       // Server port
 2. **Deploy to Development**
    ```bash
    # Set NODE_ENV=development on your dev server
-   # App will use .env.dev configuration
+   # App will use .env.prod.dev configuration
    npm run start:dev
    ```
 

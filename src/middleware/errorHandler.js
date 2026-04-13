@@ -1,5 +1,19 @@
 export const errorHandler = (err, req, res, next) => {
   console.error(err.stack);
+
+  if (err.name === 'MulterError') {
+    return res.status(400).json({
+      success: false,
+      error: err.message
+    });
+  }
+
+  if (err.message === 'Only JPG, JPEG, PNG, and WEBP images are allowed') {
+    return res.status(400).json({
+      success: false,
+      error: err.message
+    });
+  }
   
   // Mongoose validation error
   if (err.name === 'ValidationError') {

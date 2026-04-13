@@ -3,6 +3,7 @@ import authRoutes from './authRoutes.js';
 import userRoutes from './userRoutes.js';
 import designRoutes from './designRoutes.js';
 import adminRoutes from './adminRoutes.js';
+import storageRoutes from './storageRoutes.js';
 
 export const setupRoutes = (app) => {
   const router = Router();
@@ -12,6 +13,7 @@ export const setupRoutes = (app) => {
   router.use('/users', userRoutes);
   router.use('/designs', designRoutes);
   router.use('/admin', adminRoutes);
+  router.use('/storage', storageRoutes);
   
   // Health check endpoint
   router.get('/health', (req, res) => {
@@ -33,6 +35,7 @@ export const setupRoutes = (app) => {
         users: '/api/users',
         designs: '/api/designs',
         admin: '/api/admin',
+        storage: '/api/storage',
         health: '/api/health'
       }
     });

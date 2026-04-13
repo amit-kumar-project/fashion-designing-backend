@@ -402,7 +402,78 @@ If normal user calls admin APIs, response will be:
 
 ---
 
-## �📱 Mobile App Integration Code Examples
+## �️ Storage APIs (Protected)
+
+These endpoints require:
+- `Authorization: Bearer <accessToken>`
+- User can only access keys under `users/{userId}/designs/...`
+
+### 1️⃣5️⃣ Upload Design Image
+
+**Endpoint:** `POST /api/storage/upload`
+
+**Content-Type:** `multipart/form-data`
+
+**Form Data:**
+- `file` (image: JPG/JPEG/PNG/WEBP)
+
+**Success Response (201):**
+```json
+{
+  "success": true,
+  "message": "Image uploaded successfully",
+  "data": {
+    "key": "users/65f8a1b2c3d4e5f6a7b8c9d0/designs/1711000000000-uuid-image.png",
+    "bucket": "fashionBoutique",
+    "contentType": "image/png",
+    "size": 248311,
+    "signedUrl": "https://...",
+    "expiresIn": 3600
+  }
+}
+```
+
+### 1️⃣6️⃣ Get Signed View URL
+
+**Endpoint:** `GET /api/storage/signed-url?key=<OBJECT_KEY>`
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "data": {
+    "key": "users/65f8a1b2c3d4e5f6a7b8c9d0/designs/1711000000000-uuid-image.png",
+    "signedUrl": "https://...",
+    "expiresIn": 3600
+  }
+}
+```
+
+### 1️⃣7️⃣ Delete Design Image
+
+**Endpoint:** `DELETE /api/storage/object`
+
+**Request Body:**
+```json
+{
+  "key": "users/65f8a1b2c3d4e5f6a7b8c9d0/designs/1711000000000-uuid-image.png"
+}
+```
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Image deleted successfully",
+  "data": {
+    "key": "users/65f8a1b2c3d4e5f6a7b8c9d0/designs/1711000000000-uuid-image.png"
+  }
+}
+```
+
+---
+
+## ��📱 Mobile App Integration Code Examples
 
 ### React Native / Expo
 

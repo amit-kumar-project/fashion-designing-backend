@@ -44,9 +44,9 @@ src/
    ./setup-env.sh
    
    # Or manually copy example files
-   cp .env.local.example .env.local
-   cp .env.dev.example .env.dev
-   cp .env.prod.example .env.prod
+   cp .env.prod.local.example .env.prod.local
+   cp .env.prod.prod .env.prod.dev
+   cp .env.prod.prod.example .env.prod.prod
    ```
 
 4. Update environment files with your configuration:
