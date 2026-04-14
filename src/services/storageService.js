@@ -164,3 +164,29 @@ export const listUserDesignObjects = async ({ userId }) => {
     eTag: item.ETag
   }));
 };
+
+export const listGalleryObjects = async () => {
+  const { client, storageConfig } = getS3Client();
+  const prefix = 'gallery/';
+  const objects = [];
+  let continuationToken;
+
+  do {
+    const command = new ListObjectsV2Command({
+      Bucket: storageConfig.bucket,
+      Prefix: prefix,
+      ContinuationToken: continuationToken
+    });
+
+    const response = await client.send(command);
+    objects.push(...(response.Contents || []));
+    continuationToken = response.IsTruncated ? response.NextContinuationToken : undefined;
+  } while (continuationToken);
+
+  return objects.map(item => ({
+    key: item.Key,
+    size: item.Size,
+    lastModified: item.LastModified,
+    eTag: item.ETag
+  }));
+};

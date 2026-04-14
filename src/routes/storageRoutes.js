@@ -4,6 +4,7 @@ import {
   deleteDesignImage,
   getAllDesignImages,
   getDesignImageSignedUrl,
+  getGalleryImages,
   uploadDesignImage
 } from '../controllers/storageController.js';
 import { protect } from '../middleware/auth.js';
@@ -39,6 +40,9 @@ router.post('/upload', upload.single('file'), uploadDesignImage);
 
 // GET /api/storage/images - List all uploaded design images for authenticated user
 router.get('/images', getAllDesignImages);
+
+// GET /api/storage/gallery - List public admin gallery images
+router.get('/gallery', getGalleryImages);
 
 // DELETE /api/storage/object - Delete user design image by key
 router.delete('/object', deleteDesignImage);
