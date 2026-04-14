@@ -4,6 +4,7 @@ import {
   deleteObject,
   generateSignedViewUrl,
   isUserDesignObjectKey,
+  listUserDesignObjects,
   uploadObject
 } from '../services/storageService.js';
 
@@ -56,6 +57,39 @@ export const uploadDesignImage = async (req, res, next) => {
         signedUrl: signedUrlData.url,
         expiresIn: signedUrlData.expiresIn
       }
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const getAllDesignImages = async (req, res, next) => {
+  try {
+    const userId = String(req.user.userId);
+    const objects = await listUserDesignObjects({ userId });
+
+    const images = await Promise.all(
+      objects.map(async item => {
+        const signedUrlData = await generateSignedViewUrl({
+          key: item.key,
+          expiresIn: config.s3SignedUrlExpires || ONE_HOUR_SECONDS
+        });
+
+        return {
+          key: item.key,
+          size: item.size,
+          lastModified: item.lastModified,
+          eTag: item.eTag,
+          signedUrl: signedUrlData.url,
+          expiresIn: signedUrlData.expiresIn
+        };
+      })
+    );
+
+    return res.json({
+      success: true,
+      count: images.length,
+      data: images
     });
   } catch (error) {
     return next(error);

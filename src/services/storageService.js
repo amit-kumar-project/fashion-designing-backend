@@ -3,7 +3,8 @@ import {
   S3Client,
   PutObjectCommand,
   DeleteObjectCommand,
-  GetObjectCommand
+  GetObjectCommand,
+  ListObjectsV2Command
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import config from '../config/env.js';
@@ -136,4 +137,30 @@ export const generateSignedViewUrl = async ({ key, expiresIn }) => {
     url,
     expiresIn: ttlSeconds
   };
+};
+
+export const listUserDesignObjects = async ({ userId }) => {
+  const { client, storageConfig } = getS3Client();
+  const prefix = `users/${userId}/designs/`;
+  const objects = [];
+  let continuationToken;
+
+  do {
+    const command = new ListObjectsV2Command({
+      Bucket: storageConfig.bucket,
+      Prefix: prefix,
+      ContinuationToken: continuationToken
+    });
+
+    const response = await client.send(command);
+    objects.push(...(response.Contents || []));
+    continuationToken = response.IsTruncated ? response.NextContinuationToken : undefined;
+  } while (continuationToken);
+
+  return objects.map(item => ({
+    key: item.Key,
+    size: item.Size,
+    lastModified: item.LastModified,
+    eTag: item.ETag
+  }));
 };

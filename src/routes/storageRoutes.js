@@ -2,6 +2,7 @@ import { Router } from 'express';
 import multer from 'multer';
 import {
   deleteDesignImage,
+  getAllDesignImages,
   getDesignImageSignedUrl,
   uploadDesignImage
 } from '../controllers/storageController.js';
@@ -35,6 +36,9 @@ router.use(protect);
 
 // POST /api/storage/upload - Upload design image for authenticated user
 router.post('/upload', upload.single('file'), uploadDesignImage);
+
+// GET /api/storage/images - List all uploaded design images for authenticated user
+router.get('/images', getAllDesignImages);
 
 // DELETE /api/storage/object - Delete user design image by key
 router.delete('/object', deleteDesignImage);
